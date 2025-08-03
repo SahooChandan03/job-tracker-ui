@@ -2,8 +2,8 @@ import axios from 'axios';
 import { ApolloClient, InMemoryCache, createHttpLink, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
-const REST_API_URL = import.meta.env.VITE_REST_API_URL; // REST API URL
-const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL; // GraphQL URL
+const REST_API_URL = import.meta.env.VITE_REST_API_URL || 'http://localhost:5000'; // REST API URL
+const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:8000/graphql'; // GraphQL URL
 
 // Create axios instance for REST API
 const api = axios.create({
