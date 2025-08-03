@@ -14,10 +14,14 @@ const OTPInput = ({ value, onChange, onComplete, error, disabled = false }) => {
 
   useEffect(() => {
     const otpString = otp.join('');
-    if (otpString.length === 6) {
-      onComplete?.(otpString);
+    if (otpString.length === 6 && onComplete) {
+      // Use a ref to prevent multiple calls
+      const timeoutId = setTimeout(() => {
+        onComplete(otpString);
+      }, 100);
+      return () => clearTimeout(timeoutId);
     }
-  }, [otp, onComplete]);
+  }, [otp.join(''), onComplete]);
 
   const handleChange = (index, value) => {
     if (disabled) return;

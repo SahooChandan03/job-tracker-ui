@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ArrowLeftIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,6 +14,7 @@ const OTPVerificationPage = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(0);
+  const isSubmittingRef = useRef(false);
   
   // Get email and module from location state
   const email = location.state?.email;
@@ -42,7 +43,7 @@ const OTPVerificationPage = () => {
   };
 
   const handleOTPComplete = async (value) => {
-    if (value.length === 6) {
+    if (value.length === 6 && !loading) {
       await handleSubmit(value);
     }
   };
@@ -53,6 +54,12 @@ const OTPVerificationPage = () => {
       return;
     }
 
+    // Prevent multiple submissions
+    if (isSubmittingRef.current) {
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setLoading(true);
     setError('');
 
@@ -79,6 +86,7 @@ const OTPVerificationPage = () => {
       setError('Failed to verify OTP. Please try again.');
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -136,7 +144,12 @@ const OTPVerificationPage = () => {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+        <form className="mt-8 space-y-6" onSubmit={(e) => { 
+          e.preventDefault(); 
+          if (!loading && otp.length === 6) {
+            handleSubmit(); 
+          }
+        }}>
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
